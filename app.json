@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "Home_nay_an_gi_expose",
-    "slug": "Home_nay_an_gi_expose",
+    "name": "Hôm nay ăn gì",
+    "slug": "hom-nay-an-gi",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "homenayangiexpose",
+    "scheme": "homnayangi",
     "userInterfaceStyle": "automatic",
     "ios": {
       "icon": "./assets/expo.icon"
@@ -31,6 +31,21 @@
           "backgroundColor": "#208AEF",
           "image": "./assets/images/splash-icon.png",
           "imageWidth": 76
+        }
+      ],
+      "expo-sqlite",
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Cho phép Hôm nay ăn gì dùng vị trí để gợi ý quán ăn gần bạn."
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Cho phép Hôm nay ăn gì truy cập thư viện ảnh để chọn ảnh món ăn.",
+          "cameraPermission": "Cho phép Hôm nay ăn gì dùng camera để chụp ảnh món ăn.",
+          "microphonePermission": false
         }
       ]
     ],
