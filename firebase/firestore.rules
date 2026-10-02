@@ -1,0 +1,71 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(uid) {
+      return signedIn() && request.auth.uid == uid;
+    }
+
+    // Hồ sơ, khẩu vị, hạn chế ăn uống: dữ liệu nhạy cảm, chỉ chủ tài khoản đọc/ghi.
+    match /users/{uid} {
+      allow read, write: if isOwner(uid);
+
+      match /favorites/{slug} {
+        allow read, write: if isOwner(uid);
+      }
+
+      match /events/{eventId} {
+        allow read, delete: if isOwner(uid);
+        allow create: if isOwner(uid)
+          && request.resource.data.type in ['VIEW', 'LIKE', 'DISLIKE', 'SKIP', 'SELECT'];
+      }
+    }
+
+    match /posts/{postId} {
+      function validPost(data) {
+        return data.authorId == request.auth.uid
+          && data.rating is int && data.rating >= 1 && data.rating <= 5
+          && data.content is string && data.content.size() <= 1000
+          && data.foodName is string && data.foodName.size() > 0 && data.foodName.size() <= 128
+          && data.media is list && data.media.size() >= 1 && data.media.size() <= 5
+          && data.visibility in ['PUBLIC', 'PRIVATE'];
+      }
+
+      allow read: if signedIn()
+        && (resource.data.visibility == 'PUBLIC' || resource.data.authorId == request.auth.uid);
+
+      allow create: if signedIn()
+        && validPost(request.resource.data)
+        && request.resource.data.likeCount == 0;
+
+      function likePath() {
+        return /databases/$(database)/documents/posts/$(postId)/likes/$(request.auth.uid);
+      }
+
+      // Tác giả sửa nội dung. Like/bỏ like phải đi kèm tạo/xóa likes/{uid} trong cùng batch,
+      // nên mỗi người chỉ làm likeCount thay đổi đúng 1 đơn vị.
+      allow update: if signedIn() && (
+        (resource.data.authorId == request.auth.uid
+          && validPost(request.resource.data)
+          && request.resource.data.likeCount == resource.data.likeCount)
+        || (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['likeCount'])
+          && ((request.resource.data.likeCount == resource.data.likeCount + 1
+                && !exists(likePath()) && existsAfter(likePath()))
+              || (request.resource.data.likeCount == resource.data.likeCount - 1
+                && exists(likePath()) && !existsAfter(likePath()))))
+      );
+
+      allow delete: if signedIn() && resource.data.authorId == request.auth.uid;
+
+      match /likes/{uid} {
+        allow read: if signedIn();
+        allow create, delete: if isOwner(uid);
+      }
+    }
+  }
+}

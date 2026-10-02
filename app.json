@@ -8,11 +8,13 @@
     "scheme": "homnayangi",
     "userInterfaceStyle": "automatic",
     "ios": {
-      "icon": "./assets/expo.icon"
+      "icon": "./assets/expo.icon",
+      "bundleIdentifier": "com.homnayangi.app"
     },
     "android": {
+      "package": "com.homnayangi.app",
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
+        "backgroundColor": "#D9F8EE",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
         "backgroundImage": "./assets/images/android-icon-background.png",
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
@@ -20,7 +22,7 @@
       "predictiveBackGestureEnabled": false
     },
     "web": {
-      "output": "static",
+      "output": "single",
       "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
@@ -28,26 +30,31 @@
       [
         "expo-splash-screen",
         {
-          "backgroundColor": "#208AEF",
+          "backgroundColor": "#F7FFFC",
           "image": "./assets/images/splash-icon.png",
-          "imageWidth": 76
+          "imageWidth": 76,
+          "dark": {
+            "backgroundColor": "#0E1A17"
+          }
         }
       ],
       "expo-sqlite",
       [
         "expo-location",
         {
-          "locationWhenInUsePermission": "Cho phép Hôm nay ăn gì dùng vị trí để gợi ý quán ăn gần bạn."
+          "locationWhenInUsePermission": "Cho phép Hôm nay ăn gì dùng vị trí để gợi ý món theo thời tiết và tìm quán gần bạn."
         }
       ],
       [
         "expo-image-picker",
         {
-          "photosPermission": "Cho phép Hôm nay ăn gì truy cập thư viện ảnh để chọn ảnh món ăn.",
+          "photosPermission": "Cho phép Hôm nay ăn gì truy cập thư viện ảnh để đăng ảnh, video món ăn.",
           "cameraPermission": "Cho phép Hôm nay ăn gì dùng camera để chụp ảnh món ăn.",
           "microphonePermission": false
         }
-      ]
+      ],
+      "expo-video",
+      "expo-font"
     ],
     "experiments": {
       "typedRoutes": true,
